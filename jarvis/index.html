@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jarvis</title>
+<meta name="description" content="Ton résumé du jour Jarvis sur iPhone (lecture seule).">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Jarvis">
+<meta name="theme-color" content="#1b1838">
+<link rel="apple-touch-icon" href="icone.png">
+<link rel="icon" href="icone.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fond: #17142f; --texte: #f4f2ff; --texte2: rgba(244, 242, 255, .72); --gris: rgba(244, 242, 255, .5);
+  --violet: #bf5af2; --bleu: #0a84ff; --cyan: #64d2ff; --vert: #30d158; --rose: #ff375f; --orange: #ff9f0a; --jaune: #ffd60a;
+  --corps: "Inter", -apple-system, system-ui, sans-serif; --titre: "Outfit", "Inter", sans-serif;
+  --heure: -apple-system, "SF Pro Display", "Inter", sans-serif;
+  --verre: linear-gradient(155deg, rgba(255, 255, 255, .13), rgba(255, 255, 255, .05));
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { background: var(--fond); }
+body { font: 400 15px/1.45 var(--corps); color: var(--texte); min-height: 100vh; overflow-x: hidden;
+  background: radial-gradient(120% 60% at 0% 0%, rgba(124, 122, 255, .35), transparent 60%),
+              radial-gradient(90% 50% at 100% 30%, rgba(191, 90, 242, .25), transparent 60%),
+              radial-gradient(80% 50% at 30% 100%, rgba(10, 132, 255, .2), transparent 60%), var(--fond);
+  background-attachment: fixed;
+  padding: calc(env(safe-area-inset-top) + 8px) 16px calc(env(safe-area-inset-bottom) + 24px); }
+header { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px;
+  margin: calc(-8px - env(safe-area-inset-top)) -16px 12px; padding: calc(env(safe-area-inset-top) + 10px) 16px 10px;
+  background: rgba(23, 20, 47, .55); backdrop-filter: blur(24px) saturate(170%); -webkit-backdrop-filter: blur(24px) saturate(170%); }
+.marque { display: flex; align-items: center; gap: 8px; font: 600 17px var(--titre); }
+.marque i { width: 20px; height: 20px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, #a99bff 30%, #6c4cf5 70%); box-shadow: 0 0 14px rgba(160, 140, 255, .8); }
+.maj { flex: 1; text-align: right; font-size: 12px; color: var(--gris); }
+.rafraichir { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .2); color: var(--texte);
+  background: rgba(255, 255, 255, .1); font-size: 17px; }
+.rafraichir.tourne { animation: tourne 1s linear infinite; }
+@keyframes tourne { to { transform: rotate(1turn); } }
+.carte { position: relative; border-radius: 22px; padding: 16px; margin-bottom: 12px; background: var(--verre);
+  border: 1px solid rgba(255, 255, 255, .14); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 12px 30px rgba(5, 2, 25, .35);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+.etiquette { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font: 600 11px var(--titre);
+  letter-spacing: .14em; text-transform: uppercase; }
+.etiquette i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 10px currentColor; }
+.hero { background: linear-gradient(135deg, rgba(124, 122, 255, .42), rgba(191, 90, 242, .18) 55%, rgba(255, 255, 255, .07)); }
+.hero .date { font: 600 12px var(--titre); letter-spacing: .16em; text-transform: uppercase; color: #dcd8ff; }
+.hero h1 { font: 700 30px/1.1 var(--titre); letter-spacing: -.02em; margin: 6px 0 2px; }
+.hero p { color: var(--texte2); font-size: 13px; }
+.hero .heure { position: absolute; top: 16px; right: 16px; font: 600 26px var(--heure); }
+.compte { display: inline-flex; gap: 6px; align-items: center; margin-top: 10px; padding: 6px 12px; border-radius: 99px;
+  font: 600 13px var(--titre); color: #fff3b0; background: rgba(255, 214, 10, .14); border: 1px solid rgba(255, 214, 10, .4); }
+.compte b { color: var(--jaune); font: 700 15px var(--heure); }
+.rangee { display: grid; grid-template-columns: 1.35fr 1fr; gap: 12px; }
+.rangee .carte { margin-bottom: 12px; }
+.stream { display: flex; align-items: center; gap: 12px; }
+.cadran { --p: 0; flex: none; width: 70px; height: 70px; border-radius: 50%; position: relative;
+  background: conic-gradient(var(--rose) calc(var(--p) * 1%), rgba(255, 255, 255, .12) 0); }
+.cadran::after { content: ""; position: absolute; inset: 7px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #3b3760, #1e1b3c); }
+.cadran b { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; font: 600 14px var(--heure); }
+.cadran b.direct { color: var(--rose); }
+.stream small { display: block; font-size: 11px; color: var(--gris); }
+.stream strong { font: 600 16px/1.2 var(--titre); }
+.meteo .ligne { display: flex; align-items: center; gap: 8px; }
+.meteo .icone { font-size: 30px; }
+.meteo b { font: 600 32px var(--heure); }
+.meteo small { display: block; font-size: 12px; color: var(--texte2); margin-top: 4px; }
+.idees-defile { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -16px; padding: 0 16px 4px;
+  scrollbar-width: none; }
+.idees-defile::-webkit-scrollbar { display: none; }
+.idee { flex: 0 0 86%; scroll-snap-align: center; border-radius: 18px; padding: 14px; background: rgba(48, 209, 88, .08);
+  border: 1px solid rgba(48, 209, 88, .25); }
+.idee h3 { font: 600 17px/1.25 var(--titre); margin-bottom: 8px; }
+.idee h3 span { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; margin-right: 6px;
+  font-size: 13px; background: linear-gradient(180deg, #4ee07a, #1fa84a); vertical-align: 2px; }
+.idee p { color: var(--texte2); font-size: 14px; margin-bottom: 6px; }
+.idee .astuce { font-size: 13px; color: #c9f7d5; }
+.usa { display: inline-block; font: 700 10px var(--titre); letter-spacing: .08em; padding: 2px 7px; border-radius: 99px;
+  background: rgba(10, 132, 255, .25); color: #bfe0ff; margin-bottom: 6px; }
+.points { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+.points i { width: 6px; height: 6px; border-radius: 99px; background: rgba(255, 255, 255, .3); transition: all .2s; }
+.points i.actif { width: 18px; background: var(--vert); }
+.jours { display: flex; gap: 6px; overflow-x: auto; margin: 0 -16px 12px; padding: 0 16px; scrollbar-width: none; }
+.jours::-webkit-scrollbar { display: none; }
+.jours button { flex: none; font: 600 13px var(--corps); color: var(--texte2); padding: 7px 12px; border-radius: 12px;
+  background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .12); }
+.jours button.actif { color: #fff; background: rgba(255, 255, 255, .22); border-color: rgba(255, 255, 255, .35); }
+.rdv { display: grid; grid-template-columns: 52px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid rgba(255, 255, 255, .08); }
+.rdv:first-of-type { border-top: 0; }
+.rdv time { font: 600 14px var(--heure); color: var(--texte2); }
+.rdv time small { display: block; font-weight: 500; font-size: 11px; color: var(--gris); }
+.rdv div { border-left: 3px solid var(--c, var(--violet)); padding-left: 10px; min-width: 0; }
+.rdv strong { display: block; font-weight: 600; font-size: 14px; overflow-wrap: anywhere; }
+.rdv span { font-size: 11px; color: var(--gris); }
+.rdv.maintenant time { color: var(--rose); }
+.mail { padding: 9px 0; border-top: 1px solid rgba(255, 255, 255, .08); }
+.mail:first-of-type { border-top: 0; }
+.mail .haut { display: flex; gap: 8px; align-items: baseline; }
+.mail strong { font-size: 14px; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.mail .cat { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--c); }
+.mail p { font-size: 13px; color: var(--texte2); }
+.mail em { display: block; font-style: normal; font-size: 13px; color: #ffe2a8; }
+.chiffres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0; }
+.chiffres div { padding: 10px; border-radius: 14px; background: rgba(255, 255, 255, .07); }
+.chiffres b { display: block; font: 700 22px var(--heure); }
+.chiffres small { font-size: 11px; color: var(--gris); }
+.reseau { display: flex; justify-content: space-between; padding: 7px 0; border-top: 1px solid rgba(255, 255, 255, .08); font-size: 14px; }
+.reseau:first-of-type { border-top: 0; }
+.reseau b { font-family: var(--heure); }
+.monte { color: var(--vert); font-size: 12px; margin-left: 6px; }
+.note { font-size: 13px; color: var(--gris); }
+.vide { text-align: center; color: var(--gris); padding: 14px 0; }
+.accueil { text-align: center; padding: 40px 10px; }
+.accueil h1 { font: 700 26px var(--titre); margin: 14px 0 8px; }
+.accueil p { color: var(--texte2); margin-bottom: 10px; }
+.erreur { color: #ffb3c0; }
+footer { text-align: center; font-size: 12px; color: var(--gris); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="marque"><i></i>Jarvis</div>
+  <div class="maj" id="maj"></div>
+  <button class="rafraichir" id="rafraichir" aria-label="Mettre à jour">↻</button>
+</header>
+<main id="contenu"></main>
+<footer>Lecture seule · copie chiffrée envoyée par ton PC</footer>
+
+<script>
+// Le lien contient, après le « # », le numéro du gist (g) et la clé (k) : ils ne quittent jamais l'iPhone.
+// Tout le texte affiché passe par textContent : rien venant des mails n'est interprété comme du code.
+const params = new URLSearchParams(location.hash.slice(1));
+const lire = (cle) => { try { return localStorage.getItem(cle); } catch (e) { return null; } };
+const garder = (cle, valeur) => { try { localStorage.setItem(cle, valeur); } catch (e) { /* pas grave */ } };
+const GIST = params.get("g") || lire("gist"), CLE = params.get("k") || lire("cle");
+if (params.get("g")) { garder("gist", params.get("g")); garder("cle", params.get("k")); }
+
+const JOURS = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+const COULEURS = { "Plan de l'IA": "var(--violet)", "Mon plan": "var(--violet)", Perso: "var(--cyan)", Sport: "var(--vert)",
+  "École": "var(--bleu)", Famille: "var(--rose)", "Événements": "var(--jaune)", Live: "#ff453a" };
+const COULEURS_MAIL = { rdv: "var(--rose)", administratif: "var(--orange)", "école/pro": "var(--bleu)", achat: "var(--vert)",
+  compte: "var(--violet)", perso: "var(--cyan)" };
+
+function h(tag, classe, ...enfants) {
+  const e = document.createElement(tag);
+  if (classe) e.className = classe;
+  for (const c of enfants) if (c !== null && c !== undefined && c !== false) e.append(c instanceof Node ? c : String(c));
+  return e;
+}
+const etiquette = (texte, couleur) => { const e = h("div", "etiquette", h("i"), texte); e.style.color = `var(--${couleur})`; return e; };
+const carte = (classe, ...enfants) => h("section", "carte " + classe, ...enfants);
+const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const hhmm = (v) => `${String(Math.floor(v / 60) % 24).padStart(2, "0")}:${String(v % 60).padStart(2, "0")}`;
+// « 21h45 » -> minutes ; avant 5 h du matin = après minuit (fin de soirée)
+const minutes = (t) => { const m = /(\d{1,2})\s*[h:]\s*(\d{0,2})/i.exec(t || ""); if (!m) return null; let v = +m[1] * 60 + (+m[2] || 0); if (+m[1] < 5) v += 1440; return v; };
+const maintenantMin = () => { const n = new Date(); return n.getHours() * 60 + n.getMinutes(); };
+const milliers = (n) => Number(n).toLocaleString("fr-FR");
+
+let d = null, jourChoisi = null, ideeActive = 0;
+
+/* ---------- déchiffrement (AES-GCM, la clé ne sort pas de l'iPhone) */
+const deB64 = (t) => Uint8Array.from(atob(t.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - t.length % 4) % 4)), (c) => c.charCodeAt(0));
+async function dechiffrer(paquet) {
+  const cle = await crypto.subtle.importKey("raw", deB64(CLE), "AES-GCM", false, ["decrypt"]);
+  const clair = await crypto.subtle.decrypt({ name: "AES-GCM", iv: deB64(paquet.iv) }, cle, deB64(paquet.donnees));
+  return JSON.parse(new TextDecoder().decode(clair));
+}
+
+async function charger() {
+  const bouton = document.getElementById("rafraichir");
+  bouton.classList.add("tourne");
+  try {
+    const source = window.JARVIS_TEST || `https://api.github.com/gists/${encodeURIComponent(GIST)}`;
+    const r = await fetch(source, { cache: "no-store" });
+    if (!r.ok) throw new Error("GitHub répond " + r.status);
+    const gist = await r.json();
+    const fichier = gist.files ? gist.files["jarvis.json"] : gist;
+    const texte = typeof fichier.content === "string" ? fichier.content : JSON.stringify(fichier);
+    d = await dechiffrer(JSON.parse(texte));
+    garder("copie", texte); // pour l'ouvrir sans réseau
+  } catch (e) {
+    const copie = lire("copie");
+    if (copie && !d) { try { d = await dechiffrer(JSON.parse(copie)); } catch (e2) { /* clé changée */ } }
+    if (!d) { erreur(e); bouton.classList.remove("tourne"); return; }
+  }
+  bouton.classList.remove("tourne");
+  dessiner();
+  meteoEnDirect();
+}
+
+function erreur(e) {
+  document.getElementById("contenu").replaceChildren(h("div", "accueil", h("h1", "", "Pas de copie lisible"),
+    h("p", "erreur", String(e.message || e)),
+    h("p", "", "Vérifie ta connexion, ou rescanne le QR code affiché dans Jarvis sur ton PC (onglet Réseaux → 📱 iPhone).")));
+}
+
+/* ---------- live : temps avant le prochain (mêmes règles que Jarvis sur le PC) */
+const estJourLive = (j) => !d.jours_live?.length || d.jours_live.includes(j);
+function infosStream() {
+  const debut = minutes(d.stream), fin = minutes(d.stream_fin) ?? debut + 120;
+  const aujJour = new Date().getDay();
+  let n = maintenantMin(), jour = aujJour, decalage = 0;
+  if (n < 300 && n + 1440 < fin && estJourLive((aujJour + 6) % 7)) { n += 1440; jour = (aujJour + 6) % 7; decalage = -1440; }
+  if (estJourLive(jour) && n >= debut && n < fin) return { live: true, gros: "LIVE", titre: "C'est l'heure du stream", sous: "Bon live !", p: 100 };
+  let k = 0;
+  while (k < 8 && !(estJourLive((jour + k) % 7) && debut + k * 1440 > n)) k++;
+  const reste = debut + k * 1440 - n;
+  const jc = Math.floor((decalage + debut + k * 1440) / 1440), nom = JOURS[(aujJour + jc) % 7];
+  return { live: false, sous: "Prochain live dans", p: Math.max(2, 100 - reste / 2880 * 100),
+    gros: reste >= 1440 ? `${Math.floor(reste / 1440)}j ${Math.floor(reste % 1440 / 60)}h` : reste >= 60 ? `${Math.floor(reste / 60)}h${String(reste % 60).padStart(2, "0")}` : `${reste} min`,
+    titre: `${jc === 0 ? "Ce soir" : jc === 1 ? "Demain" : nom[0].toUpperCase() + nom.slice(1)} à ${d.stream}` };
+}
+
+/* ---------- météo : demandée en direct par l'iPhone à Open-Meteo (gratuit, sans compte) */
+const CIEL = [[0, "☀️", "Ciel dégagé"], [2, "🌤️", "Peu nuageux"], [3, "☁️", "Couvert"], [48, "🌫️", "Brouillard"], [57, "🌦️", "Bruine"],
+  [67, "🌧️", "Pluie"], [77, "🌨️", "Neige"], [82, "🌦️", "Averses"], [86, "🌨️", "Averses de neige"], [99, "⛈️", "Orage"]];
+const ciel = (code) => CIEL.find(([max]) => code <= max) || CIEL[CIEL.length - 1];
+let meteoDirect = null;
+async function meteoEnDirect() {
+  if (!d.ville) return;
+  try {
+    let lieu = JSON.parse(lire("lieu") || "null");
+    if (!lieu || lieu.ville !== d.ville) {
+      const g = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?count=1&language=fr&name=${encodeURIComponent(d.ville)}`)).json();
+      const r = g.results?.[0];
+      if (!r) return;
+      lieu = { ville: d.ville, nom: r.name, lat: r.latitude, lon: r.longitude };
+      garder("lieu", JSON.stringify(lieu));
+    }
+    const m = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lieu.lat}&longitude=${lieu.lon}&current=temperature_2m,weather_code&daily=temperature_2m_min,temperature_2m_max,precipitation_probability_max&forecast_days=1&timezone=auto`)).json();
+    meteoDirect = { nom: lieu.nom, temp: Math.round(m.current.temperature_2m), code: m.current.weather_code,
+      min: Math.round(m.daily.temperature_2m_min[0]), max: Math.round(m.daily.temperature_2m_max[0]), pluie: m.daily.precipitation_probability_max[0] };
+    const zone = document.getElementById("meteo");
+    if (zone) zone.replaceWith(carteMeteo());
+  } catch (e) { /* on garde la météo de la copie */ }
+}
+function carteMeteo() {
+  const c = carte("meteo", etiquette("Météo", "cyan"));
+  c.id = "meteo";
+  if (meteoDirect) {
+    const [, icone, texte] = ciel(meteoDirect.code);
+    c.append(h("div", "ligne", h("span", "icone", icone), h("b", "", `${meteoDirect.temp}°`)),
+      h("small", "", `${texte} · ${meteoDirect.min}° / ${meteoDirect.max}°${meteoDirect.pluie != null ? ` · pluie ${meteoDirect.pluie} %` : ""}`));
+  } else {
+    const auj = d.donnees.meteo?.[0];
+    if (auj) c.append(h("div", "ligne", h("span", "icone", auj.icone), h("b", "", `${auj.max}°`)), h("small", "", `${auj.ciel} · ${auj.min}° / ${auj.max}°`));
+    else c.append(h("small", "", "Indisponible"));
+  }
+  return c;
+}
+
+/* ---------- agenda d'un jour : vrais rendez-vous + ton plan (ou celui de l'IA ce jour-là) */
+function blocsDuJour(jour) {
+  const vrais = (d.semaine?.[jour] || []).map((e) => ({ debut: e.journee ? -1 : e.debut_min, fin: e.fin_min, titre: e.titre, agenda: e.agenda, journee: e.journee }));
+  let plan = [];
+  if (d.plans?.[jour]) plan = d.plans[jour].map((b) => ({ debut: b.debut, fin: b.fin, titre: b.titre, agenda: "Mon plan" }));
+  else if (jour === d.jour) plan = (d.donnees.programme || []).map((p) => ({ debut: minutes(p.heure), fin: minutes(p.fin), titre: p.texte, agenda: "Plan de l'IA" }))
+    .filter((p) => p.debut !== null);
+  return [...vrais, ...plan].sort((a, b) => a.debut - b.debut);
+}
+function carteAgenda() {
+  const c = carte("agenda", etiquette("Agenda", "violet"));
+  const jours = h("div", "jours");
+  const auj = new Date(); auj.setHours(0, 0, 0, 0);
+  for (let i = 0; i < 8; i++) {
+    const date = new Date(auj); date.setDate(auj.getDate() + i);
+    const cle = iso(date);
+    if (i > 1 && !d.semaine?.[cle] && !d.plans?.[cle]) continue;
+    const b = h("button", cle === jourChoisi ? "actif" : "", i === 0 ? "Aujourd'hui" : i === 1 ? "Demain" : `${JOURS[date.getDay()].slice(0, 3)}. ${date.getDate()}`);
+    b.onclick = () => { jourChoisi = cle; c.replaceWith(carteAgenda()); };
+    jours.append(b);
+  }
+  c.append(jours);
+  const blocs = blocsDuJour(jourChoisi);
+  if (!blocs.length) c.append(h("p", "vide", "Rien de prévu ce jour-là. 🎉"));
+  const n = maintenantMin(), estAuj = jourChoisi === iso(auj);
+  for (const b of blocs) {
+    const ligne = h("div", "rdv" + (estAuj && b.debut <= n && n < (b.fin ?? b.debut + 30) ? " maintenant" : ""),
+      h("time", "", b.journee ? "Jour" : hhmm(b.debut), b.fin != null && !b.journee ? h("small", "", hhmm(b.fin)) : null),
+      h("div", "", h("strong", "", b.titre), h("span", "", b.agenda)));
+    ligne.querySelector("div").style.setProperty("--c", COULEURS[b.agenda] || "var(--orange)");
+    c.append(ligne);
+  }
+  return c;
+}
+
+function carteIdees() {
+  const idees = d.donnees.idees || [];
+  const c = carte("", etiquette("Idées de stream", "vert"));
+  if (!idees.length) { c.append(h("p", "note", (d.donnees.intro || []).join(" ") || "Pas d'idées pour l'instant.")); return c; }
+  const defile = h("div", "idees-defile"), points = h("div", "points");
+  idees.forEach((i, n) => {
+    defile.append(h("article", "idee", i.usa ? h("span", "usa", "VU AUX USA") : null, h("h3", "", h("span", "", n + 1), i.titre),
+      ...i.corps.map((p) => h("p", "", p)), ...i.astuces.map((a) => h("p", "astuce", "🎬 " + a))));
+    points.append(h("i", n === ideeActive ? "actif" : ""));
+  });
+  defile.addEventListener("scroll", () => {
+    const n = Math.round(defile.scrollLeft / (defile.firstChild.offsetWidth + 12));
+    [...points.children].forEach((p, i) => p.classList.toggle("actif", i === n));
+    ideeActive = n;
+  }, { passive: true });
+  c.append(defile, points);
+  if (d.donnees.conseil) c.append(h("p", "note", "💡 " + d.donnees.conseil));
+  return c;
+}
+
+function dessiner() {
+  const z = document.getElementById("contenu"), maintenant = new Date();
+  const heure = maintenant.getHours();
+  const nouveau = [];
+  const evt = d.evenements_proches?.[0];
+  let dans = null;
+  if (evt) dans = Math.round((new Date(evt.date + "T00:00") - new Date(iso(maintenant) + "T00:00")) / 86400000);
+  nouveau.push(carte("hero", h("div", "date", `${JOURS[maintenant.getDay()]} ${maintenant.getDate()} ${MOIS[maintenant.getMonth()]}`),
+    h("div", "heure", hhmm(maintenantMin())),
+    h("h1", "", `${heure >= 5 && heure < 18 ? "Bonjour" : "Bonsoir"}${d.nom ? ", " + d.nom : ""}`),
+    h("p", "", "Ton résumé du jour · Jarvis"),
+    evt && dans >= 0 ? h("div", "compte", evt.titre, dans === 0 ? h("b", "", "aujourd'hui") : dans === 1 ? h("b", "", "demain") : h("span", "", "dans ", h("b", "", dans), " jours")) : null));
+  const rangee = h("div", "rangee");
+  if (d.stream) {
+    const s = infosStream(), cadran = h("div", "cadran", h("b", s.live ? "direct" : "", s.gros));
+    cadran.style.setProperty("--p", s.p);
+    rangee.append(carte("", etiquette("Stream", "rose"), h("div", "stream", cadran, h("div", "", h("small", "", s.sous), h("strong", "", s.titre)))));
+  }
+  rangee.append(carteMeteo());
+  nouveau.push(rangee, carteIdees(), carteAgenda());
+  const mails = d.donnees.mails || [];
+  if (mails.length) {
+    const c = carte("", etiquette(`Mails importants · ${mails.length}`, "orange"));
+    for (const m of mails) {
+      const cat = h("span", "cat", m.categorie);
+      cat.style.setProperty("--c", COULEURS_MAIL[(m.categorie || "").toLowerCase()] || "var(--gris)");
+      c.append(h("div", "mail", h("div", "haut", h("strong", "", m.de), cat), m.sujet ? h("p", "", m.sujet) : null, m.action ? h("em", "", "→ " + m.action) : null));
+    }
+    nouveau.push(c);
+  }
+  if (d.bilan) {
+    const b = d.bilan, date = new Date(b.date + "T12:00");
+    const duree = b.duree == null ? "" : b.duree >= 60 ? ` · ${Math.floor(b.duree / 60)}h${String(b.duree % 60).padStart(2, "0")}` : ` · ${b.duree} min`;
+    nouveau.push(carte("", etiquette("Bilan du dernier live", "rose"),
+      h("strong", "", `${JOURS[date.getDay()]} ${date.getDate()} ${MOIS[date.getMonth()]}${b.debut ? " · " + b.debut : ""}${duree}`),
+      b.titre ? h("p", "note", b.titre + (b.jeu ? " — " + b.jeu : "")) : null,
+      h("div", "chiffres", h("div", "", h("b", "", b.pic), h("small", "", "au plus haut")),
+        h("div", "", h("b", "", String(b.moyenne).replace(".", ",")), h("small", "", "en moyenne")),
+        h("div", "", h("b", "", b.abonnes == null ? "–" : (b.abonnes > 0 ? "+" : "") + b.abonnes), h("small", "", "abonnés")))));
+  }
+  if (d.abonnes?.reseaux?.length) {
+    const c = carte("", etiquette("Abonnés", "violet"));
+    for (const r of d.abonnes.reseaux) {
+      c.append(h("div", "reseau", h("span", "", r.nom), h("span", "", h("b", "", r.nombre == null ? "–" : milliers(r.nombre)),
+        r.progression ? h("span", "monte", (r.progression > 0 ? "+" : "") + r.progression) : null)));
+    }
+    nouveau.push(c);
+  }
+  z.replaceChildren(...nouveau);
+  majHeure();
+}
+
+function majHeure() {
+  if (!d) return;
+  const vieux = Math.round((Date.now() - new Date(d.genere)) / 60000);
+  document.getElementById("maj").textContent = vieux < 1 ? "à jour" : vieux < 60 ? `mis à jour il y a ${vieux} min`
+    : vieux < 1440 ? `mis à jour il y a ${Math.floor(vieux / 60)} h` : `copie du ${new Date(d.genere).toLocaleDateString("fr-FR")}`;
+}
+
+document.getElementById("rafraichir").onclick = charger;
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && d) charger(); });
+setInterval(() => { if (d) { const y = scrollY; dessiner(); scrollTo(0, y); } }, 60000);
+
+if (!GIST || !CLE) {
+  document.getElementById("contenu").replaceChildren(h("div", "accueil", h("h1", "", "Bienvenue 👋"),
+    h("p", "", "Pour voir ton Jarvis ici, scanne le QR code affiché sur ton PC : onglet Réseaux → 📱 iPhone."),
+    h("p", "note", "Puis, dans Safari : bouton Partager → « Sur l'écran d'accueil ».")));
+} else {
+  jourChoisi = iso(new Date());
+  charger();
+}
+</script>
+</body>
+</html>
