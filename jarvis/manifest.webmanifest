@@ -1,0 +1,9 @@
+{
+  "name": "Jarvis",
+  "short_name": "Jarvis",
+  "description": "Ton résumé du jour Jarvis (lecture seule)",
+  "display": "standalone",
+  "background_color": "#17142f",
+  "theme_color": "#1b1838",
+  "icons": [{ "src": "icone.png", "sizes": "256x256", "type": "image/png" }]
+}
