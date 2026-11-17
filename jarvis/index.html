@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Jarvis</title>
-<meta name="description" content="Ton résumé du jour Jarvis sur iPhone (lecture seule).">
+<title>Koraki</title>
+<meta name="description" content="Ton résumé du jour Koraki sur iPhone (lecture seule).">
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Jarvis">
+<meta name="apple-mobile-web-app-title" content="Koraki">
 <meta name="theme-color" content="#1b1838">
 <link rel="apple-touch-icon" href="icone.png">
 <link rel="icon" href="icone.png">
@@ -134,7 +134,7 @@ footer { text-align: center; font-size: 12px; color: var(--gris); margin-top: 8p
 </head>
 <body>
 <header>
-  <div class="marque"><i></i>Jarvis</div>
+  <div class="marque"><i></i>Koraki</div>
   <div class="maj" id="maj"></div>
   <button class="rafraichir" id="rafraichir" aria-label="Mettre à jour">↻</button>
 </header>
@@ -207,10 +207,10 @@ async function charger() {
 function erreur(e) {
   document.getElementById("contenu").replaceChildren(h("div", "accueil", h("h1", "", "Pas de copie lisible"),
     h("p", "erreur", String(e.message || e)),
-    h("p", "", "Vérifie ta connexion, ou rescanne le QR code affiché dans Jarvis sur ton PC (onglet Réseaux → 📱 iPhone).")));
+    h("p", "", "Vérifie ta connexion, ou rescanne le QR code affiché dans Koraki sur ton PC (onglet Réseaux → 📱 iPhone).")));
 }
 
-/* ---------- live : temps avant le prochain (mêmes règles que Jarvis sur le PC) */
+/* ---------- live : temps avant le prochain (mêmes règles que Koraki sur le PC) */
 const estJourLive = (j) => !d.jours_live?.length || d.jours_live.includes(j);
 function infosStream() {
   const debut = minutes(d.stream), fin = minutes(d.stream_fin) ?? debut + 120;
@@ -302,11 +302,13 @@ function carteAgenda() {
 
 function carteIdees() {
   const idees = d.donnees.idees || [];
-  const c = carte("", etiquette("Idées de stream", "vert"));
+  const c = carte("", etiquette("Accroches du jour", "vert"));
   if (!idees.length) { c.append(h("p", "note", (d.donnees.intro || []).join(" ") || "Pas d'idées pour l'instant.")); return c; }
   const defile = h("div", "idees-defile"), points = h("div", "points");
   idees.forEach((i, n) => {
     defile.append(h("article", "idee", i.usa ? h("span", "usa", "VU AUX USA") : null, h("h3", "", h("span", "", n + 1), i.titre),
+      ...(i.defi ? [h("p", "astuce", "🎮 Défi : " + i.defi)] : []),
+      ...(i.accroches || []).map((a) => h("p", "", (a.format ? a.format + " : " : "") + "« " + a.texte + " »")),
       ...i.corps.map((p) => h("p", "", p)), ...i.astuces.map((a) => h("p", "astuce", "🎬 " + a))));
     points.append(h("i", n === ideeActive ? "actif" : ""));
   });
@@ -330,7 +332,7 @@ function dessiner() {
   nouveau.push(carte("hero", h("div", "date", `${JOURS[maintenant.getDay()]} ${maintenant.getDate()} ${MOIS[maintenant.getMonth()]}`),
     h("div", "heure", hhmm(maintenantMin())),
     h("h1", "", `${heure >= 5 && heure < 18 ? "Bonjour" : "Bonsoir"}${d.nom ? ", " + d.nom : ""}`),
-    h("p", "", "Ton résumé du jour · Jarvis"),
+    h("p", "", "Ton résumé du jour · Koraki"),
     evt && dans >= 0 ? h("div", "compte", evt.titre, dans === 0 ? h("b", "", "aujourd'hui") : dans === 1 ? h("b", "", "demain") : h("span", "", "dans ", h("b", "", dans), " jours")) : null));
   const rangee = h("div", "rangee");
   if (d.stream) {
@@ -385,7 +387,7 @@ setInterval(() => { if (d) { const y = scrollY; dessiner(); scrollTo(0, y); } },
 
 if (!GIST || !CLE) {
   document.getElementById("contenu").replaceChildren(h("div", "accueil", h("h1", "", "Bienvenue 👋"),
-    h("p", "", "Pour voir ton Jarvis ici, scanne le QR code affiché sur ton PC : onglet Réseaux → 📱 iPhone."),
+    h("p", "", "Pour voir ton Koraki ici, scanne le QR code affiché sur ton PC : onglet Réseaux → 📱 iPhone."),
     h("p", "note", "Puis, dans Safari : bouton Partager → « Sur l'écran d'accueil ».")));
 } else {
   jourChoisi = iso(new Date());
